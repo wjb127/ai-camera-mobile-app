@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Camera from '@/components/Camera'
 import VideoTutorials from '@/components/VideoTutorials'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
+import PWAInstallGuide from '@/components/PWAInstallGuide'
 
 export default function Home() {
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
   const [showTutorials, setShowTutorials] = useState(true)
+  const [showInstallGuide, setShowInstallGuide] = useState(false)
 
   const handlePhotoCapture = (imageData: string) => {
     setCapturedPhoto(imageData)
@@ -28,7 +30,15 @@ export default function Home() {
       <div className="max-w-md mx-auto">
         {/* 헤더 */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">AI 카메라</h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-2xl font-bold text-gray-900">AI 카메라</h1>
+            <button
+              onClick={() => setShowInstallGuide(true)}
+              className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1"
+            >
+              📱 앱 설치
+            </button>
+          </div>
           <p className="text-gray-600 text-sm">사진 촬영 팁과 함께 완벽한 사진을 찍어보세요</p>
         </div>
 
@@ -96,6 +106,12 @@ export default function Home() {
 
       {/* PWA 설치 프롬프트 */}
       <PWAInstallPrompt />
+
+      {/* PWA 설치 가이드 팝업 */}
+      <PWAInstallGuide 
+        isOpen={showInstallGuide}
+        onClose={() => setShowInstallGuide(false)}
+      />
     </main>
   )
 }

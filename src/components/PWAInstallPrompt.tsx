@@ -37,9 +37,11 @@ export default function PWAInstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent)
       
       // 설치 배너 표시 (사용자가 이전에 닫지 않았다면)
-      const hasPromptBeenShown = localStorage.getItem('pwa-install-prompt-shown')
-      if (!hasPromptBeenShown && !isInstalled) {
-        setTimeout(() => setShowInstallBanner(true), 2000) // 2초 후 표시
+      if (typeof window !== 'undefined') {
+        const hasPromptBeenShown = localStorage.getItem('pwa-install-prompt-shown')
+        if (!hasPromptBeenShown && !isInstalled) {
+          setTimeout(() => setShowInstallBanner(true), 2000) // 2초 후 표시
+        }
       }
     }
 
@@ -76,7 +78,9 @@ export default function PWAInstallPrompt() {
       
       setDeferredPrompt(null)
       setShowInstallBanner(false)
-      localStorage.setItem('pwa-install-prompt-shown', 'true')
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pwa-install-prompt-shown', 'true')
+      }
     } catch (error) {
       console.error('PWA: Install prompt failed', error)
     }
@@ -84,15 +88,19 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowInstallBanner(false)
-    localStorage.setItem('pwa-install-prompt-shown', 'true')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pwa-install-prompt-shown', 'true')
+    }
   }
 
   // iOS Safari 감지
   const isIOS = () => {
+    if (typeof navigator === 'undefined') return false
     return /iPad|iPhone|iPod/.test(navigator.userAgent)
   }
 
   const isInStandaloneMode = () => {
+    if (typeof window === 'undefined') return false
     return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
            ('standalone' in window.navigator && (window.navigator as any).standalone)
   }
