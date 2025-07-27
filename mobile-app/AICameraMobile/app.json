@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "AI Camera",
+    "slug": "ai-camera-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "aicamera",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aicamera.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "AI Camera 앱에서 사진을 촬영하기 위해 카메라 접근 권한이 필요합니다.",
+        "NSMicrophoneUsageDescription": "AI Camera 앱에서 비디오 녹화를 위해 마이크 접근 권한이 필요합니다.",
+        "NSPhotoLibraryUsageDescription": "촬영한 사진을 사진 앱에 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다.",
+        "NSPhotoLibraryAddUsageDescription": "촬영한 사진을 사진 앱에 저장하기 위해 사진 라이브러리 쓰기 권한이 필요합니다."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#3b82f6"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.aicamera.mobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#3b82f6"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ai-camera-mobile"
+      }
+    }
+  }
+}
