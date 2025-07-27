@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
+import CameraFilter, { FilterType, FILTERS } from './CameraFilter'
 
 interface CameraProps {
   onCapture?: (imageData: string) => void
@@ -13,6 +14,7 @@ export default function Camera({ onCapture }: CameraProps) {
   const [error, setError] = useState<string | null>(null)
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
   const [isFlipping, setIsFlipping] = useState(false)
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>(FILTERS[0])
 
   const startCamera = async (mode: 'user' | 'environment') => {
     try {
@@ -76,13 +78,28 @@ export default function Camera({ onCapture }: CameraProps) {
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     
+    // 필터 적용을 위해 임시 canvas 생성
+    const tempCanvas = document.createElement('canvas')
+    const tempContext = tempCanvas.getContext('2d')
+    if (!tempContext) return
+
+    tempCanvas.width = canvas.width
+    tempCanvas.height = canvas.height
+
     // 전면 카메라인 경우 좌우 반전
     if (facingMode === 'user') {
-      context.scale(-1, 1)
-      context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height)
+      tempContext.scale(-1, 1)
+      tempContext.drawImage(video, -tempCanvas.width, 0, tempCanvas.width, tempCanvas.height)
     } else {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      tempContext.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height)
     }
+
+    // 필터 적용
+    if (selectedFilter.cssFilter !== 'none') {
+      context.filter = selectedFilter.cssFilter
+    }
+    context.drawImage(tempCanvas, 0, 0)
+    context.filter = 'none' // 필터 리셋
 
     const imageData = canvas.toDataURL('image/jpeg', 0.8)
     onCapture?.(imageData)
@@ -103,6 +120,7 @@ export default function Camera({ onCapture }: CameraProps) {
         autoPlay
         playsInline
         muted
+        style={{ filter: selectedFilter.cssFilter }}
         className={`w-full rounded-lg shadow-lg transition-transform duration-300 ${
           facingMode === 'user' ? 'scale-x-[-1]' : ''
         }`}
@@ -144,6 +162,17 @@ export default function Camera({ onCapture }: CameraProps) {
       {isStreaming && (
         <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
           {facingMode === 'user' ? '전면' : '후면'}
+        </div>
+      )}
+
+      {/* 필터 선택 */}
+      {isStreaming && (
+        <div className="absolute bottom-20 left-4 right-4">
+          <CameraFilter
+            selectedFilter={selectedFilter}
+            onFilterChange={setSelectedFilter}
+            className="relative"
+          />
         </div>
       )}
     </div>

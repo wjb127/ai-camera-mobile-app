@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Camera from '@/components/Camera'
 import VideoTutorials from '@/components/VideoTutorials'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 export default function Home() {
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
@@ -92,6 +93,9 @@ export default function Home() {
           </p>
         </div>
       </div>
+
+      {/* PWA 설치 프롬프트 */}
+      <PWAInstallPrompt />
     </main>
   )
 }

@@ -1,0 +1,112 @@
+{
+  "name": "AI Camera - 스마트 사진 촬영 도우미",
+  "short_name": "AI Camera",
+  "description": "사진 촬영 팁과 함께 완벽한 사진을 찍어보세요",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "카메라 촬영 화면"
+    },
+    {
+      "src": "/screenshots/mobile-2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "튜토리얼 영상 목록"
+    }
+  ],
+  "categories": ["photography", "utilities", "productivity"],
+  "lang": "ko-KR",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "features": [
+    "camera",
+    "cross-platform",
+    "offline-support"
+  ],
+  "shortcuts": [
+    {
+      "name": "빠른 촬영",
+      "short_name": "촬영",
+      "description": "바로 카메라로 이동해서 사진 촬영",
+      "url": "/?shortcut=camera",
+      "icons": [
+        {
+          "src": "/icons/shortcut-camera.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "촬영 팁",
+      "short_name": "팁",
+      "description": "사진 촬영 튜토리얼 영상 보기",
+      "url": "/?shortcut=tutorials",
+      "icons": [
+        {
+          "src": "/icons/shortcut-tips.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
