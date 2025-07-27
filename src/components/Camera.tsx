@@ -2,12 +2,16 @@
 
 import { useRef, useEffect, useState } from 'react'
 import CameraFilter, { FilterType, FILTERS } from './CameraFilter'
+import CompositionGuide from './CompositionGuide'
+import BrightnessAnalyzer from './BrightnessAnalyzer'
+import HorizonGuide from './HorizonGuide'
 
 interface CameraProps {
   onCapture?: (imageData: string) => void
+  selectedMode?: string
 }
 
-export default function Camera({ onCapture }: CameraProps) {
+export default function Camera({ onCapture, selectedMode = 'auto' }: CameraProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isStreaming, setIsStreaming] = useState(false)
@@ -15,6 +19,10 @@ export default function Camera({ onCapture }: CameraProps) {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
   const [isFlipping, setIsFlipping] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState<FilterType>(FILTERS[0])
+  
+  // 실시간 분석 기능 상태
+  const [guideType, setGuideType] = useState<'grid' | 'center' | 'diagonal' | 'off'>('grid')
+  const [analysisEnabled, setAnalysisEnabled] = useState(true)
 
   const startCamera = async (mode: 'user' | 'environment') => {
     try {
@@ -127,6 +135,29 @@ export default function Camera({ onCapture }: CameraProps) {
       />
       <canvas ref={canvasRef} className="hidden" />
       
+      {/* 실시간 분석 기능들 */}
+      {isStreaming && analysisEnabled && (
+        <>
+          {/* 구도 가이드 */}
+          <CompositionGuide
+            enabled={guideType !== 'off'}
+            guideType={guideType}
+            onGuideTypeChange={setGuideType}
+          />
+          
+          {/* 밝기 분석 */}
+          <BrightnessAnalyzer
+            videoRef={videoRef}
+            enabled={true}
+          />
+          
+          {/* 수평선 가이드 (풍경 모드에서만) */}
+          {selectedMode === 'landscape' && (
+            <HorizonGuide enabled={true} />
+          )}
+        </>
+      )}
+      
       {/* 카메라 전환 버튼 */}
       {isStreaming && (
         <button
@@ -163,6 +194,16 @@ export default function Camera({ onCapture }: CameraProps) {
         <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
           {facingMode === 'user' ? '전면' : '후면'}
         </div>
+      )}
+
+      {/* 분석 기능 토글 버튼 */}
+      {isStreaming && (
+        <button
+          onClick={() => setAnalysisEnabled(!analysisEnabled)}
+          className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-xs hover:bg-opacity-70 transition-colors"
+        >
+          {analysisEnabled ? '🔍 분석 켜짐' : '🔍 분석 꺼짐'}
+        </button>
       )}
 
       {/* 필터 선택 */}

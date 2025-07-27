@@ -5,20 +5,52 @@ import Camera from '@/components/Camera'
 import VideoTutorials from '@/components/VideoTutorials'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import PWAInstallGuide from '@/components/PWAInstallGuide'
+import NativeDetector from '@/components/NativeDetector'
+import PhotoModeSelector, { PhotoMode } from '@/components/PhotoModeSelector'
+import FeatureExplanationModal from '@/components/FeatureExplanationModal'
 
 export default function Home() {
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
   const [showTutorials, setShowTutorials] = useState(true)
   const [showInstallGuide, setShowInstallGuide] = useState(false)
+  const [isNativeApp, setIsNativeApp] = useState(false)
+  const [nativePlatform, setNativePlatform] = useState<string>('')
+  const [selectedPhotoMode, setSelectedPhotoMode] = useState<PhotoMode>('auto')
+  const [showFeatureModal, setShowFeatureModal] = useState(false)
+  const [selectedFeature, setSelectedFeature] = useState<string>('')
 
   const handlePhotoCapture = (imageData: string) => {
     setCapturedPhoto(imageData)
     
-    // 사진 다운로드
-    const link = document.createElement('a')
-    link.download = `photo-${Date.now()}.jpg`
-    link.href = imageData
-    link.click()
+    // 네이티브 앱에서는 네이티브로 메시지 전송
+    if (isNativeApp && typeof window !== 'undefined' && (window as any).sendToNative) {
+      (window as any).sendToNative({
+        type: 'PHOTO_CAPTURED',
+        imageData,
+        timestamp: Date.now()
+      })
+    } else {
+      // 웹에서는 다운로드
+      const link = document.createElement('a')
+      link.download = `photo-${Date.now()}.jpg`
+      link.href = imageData
+      link.click()
+    }
+  }
+
+  const handleNativeDetected = (platform: string) => {
+    setIsNativeApp(true)
+    setNativePlatform(platform)
+    console.log('Running in native app:', platform)
+  }
+
+  const handleFeatureClick = (feature: string, type: 'realtime' | 'postprocess') => {
+    setSelectedFeature(feature)
+    setShowFeatureModal(true)
+  }
+
+  const handlePhotoModeChange = (mode: PhotoMode) => {
+    setSelectedPhotoMode(mode)
   }
 
   const retakePhoto = () => {
@@ -26,20 +58,37 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-md mx-auto">
-        {/* 헤더 */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">AI 카메라</h1>
-            <button
-              onClick={() => setShowInstallGuide(true)}
-              className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1"
-            >
-              📱 앱 설치
-            </button>
+    <NativeDetector onNativeDetected={handleNativeDetected}>
+      <main className="min-h-screen bg-gray-100 p-4">
+        <div className="max-w-md mx-auto">
+          {/* 헤더 */}
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <h1 className="text-2xl font-bold text-gray-900">AI 카메라</h1>
+              {!isNativeApp && (
+                <button
+                  onClick={() => setShowInstallGuide(true)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-600 transition-colors flex items-center gap-1"
+                >
+                  📱 앱 설치
+                </button>
+              )}
+              {isNativeApp && (
+                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                  📱 {nativePlatform === 'ios' ? 'iOS' : 'Android'} 앱
+                </span>
+              )}
+            </div>
+            <p className="text-gray-600 text-sm">사진 촬영 팁과 함께 완벽한 사진을 찍어보세요</p>
           </div>
-          <p className="text-gray-600 text-sm">사진 촬영 팁과 함께 완벽한 사진을 찍어보세요</p>
+
+        {/* 촬영 모드 선택 */}
+        <div className="mb-4">
+          <PhotoModeSelector
+            selectedMode={selectedPhotoMode}
+            onModeChange={handlePhotoModeChange}
+            onFeatureClick={handleFeatureClick}
+          />
         </div>
 
         {/* 촬영된 사진 표시 또는 카메라 */}
@@ -67,7 +116,10 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <Camera onCapture={handlePhotoCapture} />
+            <Camera 
+              onCapture={handlePhotoCapture} 
+              selectedMode={selectedPhotoMode}
+            />
           )}
         </div>
 
@@ -104,14 +156,24 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PWA 설치 프롬프트 */}
-      <PWAInstallPrompt />
+        {/* PWA 설치 프롬프트 - 네이티브 앱에서는 숨김 */}
+        {!isNativeApp && <PWAInstallPrompt />}
 
-      {/* PWA 설치 가이드 팝업 */}
-      <PWAInstallGuide 
-        isOpen={showInstallGuide}
-        onClose={() => setShowInstallGuide(false)}
-      />
-    </main>
+        {/* PWA 설치 가이드 팝업 - 네이티브 앱에서는 숨김 */}
+        {!isNativeApp && (
+          <PWAInstallGuide 
+            isOpen={showInstallGuide}
+            onClose={() => setShowInstallGuide(false)}
+          />
+        )}
+
+        {/* 기능 설명 모달 */}
+        <FeatureExplanationModal
+          isOpen={showFeatureModal}
+          featureName={selectedFeature}
+          onClose={() => setShowFeatureModal(false)}
+        />
+      </main>
+    </NativeDetector>
   )
 }
